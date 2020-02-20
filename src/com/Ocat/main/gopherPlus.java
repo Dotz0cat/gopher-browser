@@ -9,8 +9,6 @@ import java.util.Arrays;
 
 public class gopherPlus extends gopher {
     
-    private static final Charset ascii = Charset.forName("US-ASCII");
-    
     public gopherPlus(String url) {
         super(url);
     }
@@ -22,13 +20,13 @@ public class gopherPlus extends gopher {
     private static void getRequest(URLConnection g) throws IOException {
         g.setDoOutput(true);
         String request = "\t+\r\n";
-        g.getOutputStream().write(request.getBytes(ascii));
+        g.getOutputStream().write(request.getBytes(charset()));
     }
     
     private static void getRequest(URLConnection g, String selctor) throws IOException {
         g.setDoOutput(true);
         String request = selctor + "\t+\r\n";
-        g.getOutputStream().write(request.getBytes(ascii));
+        g.getOutputStream().write(request.getBytes(charset()));
     }
     
     @Override
@@ -46,7 +44,7 @@ public class gopherPlus extends gopher {
         }
         
         //input
-        BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), ascii));
+        BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), charset()));
         
         printOut(in);
         in.close();

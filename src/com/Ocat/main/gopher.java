@@ -21,7 +21,7 @@ public class gopher {
         this.selector = select;
     }
     
-    private static Byte[] toObject(byte[] b) {
+    protected static Byte[] toObject(byte[] b) {
         Byte[] b2 = new Byte[b.length];
         for (int i = 0; i < b.length; i++) {
             b2[i] = b[i];
@@ -29,7 +29,7 @@ public class gopher {
         return b2;
     }
     
-    private static byte[] toPrimitive(Byte[] b) {
+    protected static byte[] toPrimitive(Byte[] b) {
         byte[] b2 = new byte[b.length];
         for (int i = 0; i < b.length; i++) {
             b2[i] = b[i];
@@ -48,13 +48,13 @@ public class gopher {
     private static void getRequest(URLConnection g) throws IOException {
         g.setDoOutput(true);
         String request = "\r\n";
-        g.getOutputStream().write(request.getBytes(ascii));
+        g.getOutputStream().write(request.getBytes(charset()));
     }
     
     private static void getRequest(URLConnection g, String selctor) throws IOException {
         g.setDoOutput(true);
         String request = selctor + "\r\n";
-        g.getOutputStream().write(request.getBytes(ascii));
+        g.getOutputStream().write(request.getBytes(charset()));
     }
     
     protected static void printOut(BufferedReader in) {
@@ -64,7 +64,7 @@ public class gopher {
         while (go) {
             //add this line to the array list
             try {
-                page.add(i, toObject(in.readLine().getBytes(ascii)));
+                page.add(i, toObject(in.readLine().getBytes(charset())));
             //look for the end of a gopher page
             } catch (Exception e) {
                 break;
@@ -73,13 +73,13 @@ public class gopher {
         }
         int q = 0;
         while (q<i) {
-            String H = new String(toPrimitive(page.get(q)), ascii);
+            String H = new String(toPrimitive(page.get(q)), charset());
             System.out.println(trim(H));
             q++;
         }
     }
     
-    private static String trim(String H) {
+    protected static String trim(String H) {
         String string = H;
         int tab = 0;
         if (!string.equals(".")) {
@@ -96,6 +96,10 @@ public class gopher {
         return string.substring(1, tab);
     }
     
+    protected static Charset charset() {
+        return ascii;
+    }
+    
     public void getPage() throws Exception {
         
         URL newURL;
@@ -110,7 +114,7 @@ public class gopher {
         }
         
         //input
-        BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), ascii));
+        BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), charset()));
         
         printOut(in);
         in.close();
