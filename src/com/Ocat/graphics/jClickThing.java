@@ -13,4 +13,16 @@ public class jClickThing extends JLabel {
         this.selector = selctor;
         this.url = url;
     }
+    
+    public char getType() {
+        return type;
+    }
+    
+    public String getSelector() {
+        return selector;
+    }
+    
+    public String getUrl() {
+        return url;
+    }
 }

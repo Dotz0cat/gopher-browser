@@ -1,6 +1,7 @@
 package com.Ocat.graphics;
 
 import com.Ocat.main.gopher;
+import com.Ocat.main.gopherGraphical;
 import com.Ocat.main.gopherHandlerFactory;
 import java.io.PrintStream;
 import java.net.URL;
@@ -121,9 +122,9 @@ public class gui extends javax.swing.JFrame {
                 url = line2;
                 jTextField1.setText(url);
             }
-            gopher n = new gopher(url);
+            gopherGraphical n = new gopherGraphical(url);
             try {
-                n.getPage();
+                n.getPage(jTextPane1);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -143,9 +144,9 @@ public class gui extends javax.swing.JFrame {
             url = line2;
             jTextField1.setText(url);
         }
-        gopher n = new gopher(url);
+        gopherGraphical n = new gopherGraphical(url);
         try {
-            n.getPage();
+            n.getPage(jTextPane1);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
