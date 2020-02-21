@@ -45,13 +45,13 @@ public class gopher {
         return selector;
     }
     
-    private static void getRequest(URLConnection g) throws IOException {
+    protected static void getRequest(URLConnection g) throws IOException {
         g.setDoOutput(true);
         String request = "\r\n";
         g.getOutputStream().write(request.getBytes(charset()));
     }
     
-    private static void getRequest(URLConnection g, String selctor) throws IOException {
+    protected static void getRequest(URLConnection g, String selctor) throws IOException {
         g.setDoOutput(true);
         String request = selctor + "\r\n";
         g.getOutputStream().write(request.getBytes(charset()));
