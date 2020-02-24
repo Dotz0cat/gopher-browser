@@ -9,10 +9,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
-public class gopherGraphical extends gopher {
+public class gopherGraphical extends gopher implements Cloneable {
     
     public gopherGraphical(String url) {
         super(url);
@@ -22,7 +24,7 @@ public class gopherGraphical extends gopher {
         super(url, Selector);
     }
     
-    protected static void printOut(BufferedReader in, JTextPane pane) {
+    protected void printOut(BufferedReader in, JTextPane pane) {
         ArrayList<Byte[]> page = new ArrayList();
         boolean go = true;
         int i = 0;
@@ -50,16 +52,71 @@ public class gopherGraphical extends gopher {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     jClickThing L = (jClickThing) e.getSource();
+                    switch (L.getType()) {
+                        case ('1'):
+                            gopherGraphical n;
+                            String line = L.getUrl();
+                            String url;
+                            if (line.startsWith("gopher://")) {
+                                url = line;
+                            }
+                            else {
+                                url = "gopher://" + line;
+                            }
+                            n = new gopherGraphical(url, L.getSelector());
+                            pane.setText("");
+                            try {
+                                n.getPage(pane);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            try {
+                                back(pane);
+                            } catch (CloneNotSupportedException ex) {
+                                ex.printStackTrace();
+                            }
+                        break;
+                        case('8'):
+                            pane.setText("");
+                            System.err.println("this is telnet. it will not be implemented for a long time");
+                            try {
+                                back(pane);
+                            } catch (CloneNotSupportedException ex) {
+                                ex.printStackTrace();
+                            }
+                        break;
+                        case ('i'):
+                        break;
+                        default:
+                            pane.setText("");
+                            System.err.println("sorry handling for this is not implemented yet");
+                            try {
+                                back(pane);
+                            } catch (CloneNotSupportedException ex) {
+                                ex.printStackTrace();
+                            }
+                        break;
+                    }
+                }
+            });
+            pane.insertComponent(F);
+            System.out.print("\r\n");
+            //System.out.println(F);
+            //System.out.println("I am in the gopherGraphical class");
+            
+            q++;
+        }
+    }
+    
+    private void back(JTextPane pane) throws CloneNotSupportedException {
+        jClickThing j = new jClickThing("Back", (gopherGraphical)this.clone());
+        j.addMouseListener(new MouseAdapter() {
+                
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    jClickThing L = (jClickThing) e.getSource();
                     gopherGraphical n;
-                    String line = L.getUrl();
-                    String url;
-                    if (line.startsWith("gopher://")) {
-                        url = line;
-                    }
-                    else {
-                        url = "gopher://" + line;
-                    }
-                    n = new gopherGraphical(url, L.getSelector());
+                    n = L.getGopher();
                     pane.setText("");
                     try {
                         n.getPage(pane);
@@ -69,18 +126,18 @@ public class gopherGraphical extends gopher {
                        
                 }
             });
-            pane.insertComponent(F);
-            System.out.println("");
-            //System.out.println(F);
-            //System.out.println("I am in the gopherGraphical class");
-            
-            q++;
-            
-        }
+        
+        pane.insertComponent(j);
+        System.out.print("\r\n");
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
     
     private static char getType(String H) {
-        return H.charAt(1);
+        return H.charAt(0);
     }
     
     protected static String getSelect(String H) {
@@ -94,9 +151,9 @@ public class gopherGraphical extends gopher {
                     break;
                 }
             }
-            for (int i = tab; i < string.length(); i++) {
-                if (string.charAt(i) == (char) 9) {
-                    tab2 = i;
+            for (int q = tab+1; q < string.length(); q++) {
+                if (string.charAt(q) == (char) 9) {
+                    tab2 = q;
                     break;
                 }
             }
@@ -104,7 +161,7 @@ public class gopherGraphical extends gopher {
         else {
             return "";
         }
-        return string.substring(tab, tab2);
+        return string.substring(tab+1, tab2);
     }
     
     protected static String geturl(String H) {
@@ -119,15 +176,15 @@ public class gopherGraphical extends gopher {
                     break;
                 }
             }
-            for (int i = tab; i < string.length(); i++) {
-                if (string.charAt(i) == (char) 9) {
-                    tab2 = i;
+            for (int q = tab+1; q < string.length(); q++) {
+                if (string.charAt(q) == (char) 9) {
+                    tab2 = q;
                     break;
                 }
             }
-            for (int i = tab2; i < string.length(); i++) {
-                if (string.charAt(i) == (char) 9) {
-                    tab3 = i;
+            for (int c = tab2+1; c < string.length(); c++) {
+                if (string.charAt(c) == (char) 9) {
+                    tab3 = c;
                     break;
                 }
             }
@@ -136,7 +193,7 @@ public class gopherGraphical extends gopher {
         else {
             return "";
         }
-        return string.substring(tab2, tab3)+":"+getPort(string);
+        return string.substring(tab2+1, tab3)+":"+getPort(string);
     }
     
     protected static String getPort(String H) {
@@ -152,29 +209,32 @@ public class gopherGraphical extends gopher {
                     break;
                 }
             }
-            for (int i = tab; i < string.length(); i++) {
-                if (string.charAt(i) == (char) 9) {
-                    tab2 = i;
+            for (int q = tab+1; q < string.length(); q++) {
+                if (string.charAt(q) == (char) 9) {
+                    tab2 = q;
                     break;
                 }
             }
-            for (int i = tab2; i < string.length(); i++) {
-                if (string.charAt(i) == (char) 9) {
-                    tab3 = i;
+            for (int c = tab2+1; c < string.length(); c++) {
+                if (string.charAt(c) == (char) 9) {
+                    tab3 = c;
                     break;
                 }
             }
             OUTER:
-            for (int i = tab3; i < string.length(); i++) {
-                switch (string.charAt(i)) {
+            for (int w = tab3+1; w < string.length(); w++) {
+                switch (string.charAt(w)) {
                     case (char) 13:
-                        CRLF = i;
+                        //CR
+                        CRLF = w;
                         break OUTER;
                     case (char) 9:
-                        CRLF = i;
+                        //tab
+                        CRLF = w;
                         break OUTER;
                     case (char) 43:
-                        CRLF = i - 1;
+                        //plus
+                        CRLF = w - 1;
                         break OUTER;
                     default:
                         break;
@@ -184,7 +244,12 @@ public class gopherGraphical extends gopher {
         else {
             return "";
         }
-        return string.substring(tab3, CRLF);
+        if (CRLF==0) {
+            return string.substring(tab3+1);
+        }
+        else {
+            return string.substring(tab3+1, CRLF);
+        }
     }
     
     public void getPage(JTextPane pane) throws Exception {
