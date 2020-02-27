@@ -9,6 +9,7 @@
 <!-- in the project's Project Properties dialog box.-->
 <project name="something" default="default" basedir=".">
     <description>Builds, tests, and runs the project something.</description>
+    <property name="src" location="src"/>
     <import file="nbproject/build-impl.xml"/>
     <!--
 
