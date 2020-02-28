@@ -3,20 +3,64 @@ package com.Ocat.graphics;
 import com.Ocat.main.gopher;
 import com.Ocat.main.gopherGraphical;
 import com.Ocat.main.gopherHandlerFactory;
+import java.awt.event.KeyEvent;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class gui extends javax.swing.JFrame {
-
+    
+    public static ArrayList<gopherGraphical> history;
+    public static int historyNum;
+    
     /**
      * Creates new form gui
      */
     public gui() {
+        history = new ArrayList();
+        historyNum = history.size();
         initComponents();
         PrintStream printStream = new PrintStream( new secondPrintStream(jTextPane1));
         System.setOut(printStream);
         System.setErr(printStream);
         jTextPane1.setEditable(false);
+        jTextPane1.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                switch (evt.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        //System.out.println("the thing is runing left");
+                        jTextPane1.setText("");
+                        System.out.println(historyNum);
+                        historyNum = historyNum - 1;
+                        try {
+                            history.get(historyNum).getPage(jTextPane1);
+                        } catch (Exception ex) {}
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (historyNum!=history.size()) {
+                            historyNum = historyNum +1;
+                            try {
+                                history.get(historyNum).getPage(jTextPane1);
+                            } catch (Exception ex) {}
+                        }
+                        
+                        break;
+                    default:
+                        break;
+                }
+                }
+});
+    }
+    
+    public static ArrayList<gopherGraphical> getHistory() {
+        return history;
+    }
+    
+    public static void updateNum() {
+        historyNum = history.size();
     }
 
     /**
@@ -42,11 +86,6 @@ public class gui extends javax.swing.JFrame {
         jLabel1.setText("site:");
 
         jTextField1.setText("gopher site");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 jTextField1KeyTyped(evt);
@@ -57,11 +96,6 @@ public class gui extends javax.swing.JFrame {
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
             }
         });
 
@@ -87,7 +121,7 @@ public class gui extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addGap(18, 18, 18))
-            .addComponent(jScrollPane2)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,10 +137,6 @@ public class gui extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyTyped
         // TODO add your handling code here:
@@ -152,10 +182,7 @@ public class gui extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1MouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
+    
     /**
      * @param args the command line arguments
      */
