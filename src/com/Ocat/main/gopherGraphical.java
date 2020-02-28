@@ -1,5 +1,6 @@
 package com.Ocat.main;
 
+import com.Ocat.graphics.gui;
 import com.Ocat.graphics.jClickThing;
 import static com.Ocat.main.gopher.charset;
 import java.awt.Desktop;
@@ -14,6 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,7 +95,7 @@ public class gopherGraphical extends gopher implements Cloneable {
                             n = new gopherGraphical(url, L.getSelector());
                             pane.setText("");
                             try {
-                                n.getText(pane);
+                                n.getText();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -302,6 +304,12 @@ public class gopherGraphical extends gopher implements Cloneable {
     }
     
     public void getPage(JTextPane pane) throws Exception {
+        //make a clone and put in the arraylist in gui
+        com.Ocat.graphics.gui.history.add((gopherGraphical) this.clone());
+        if (gui.historyNum == gui.history.size()) {
+            
+        }
+        com.Ocat.graphics.gui.updateNum();
         
         URL newURL;
         newURL = new URL(getUrl());
@@ -322,7 +330,7 @@ public class gopherGraphical extends gopher implements Cloneable {
         
     }
     
-    public void getText(JTextPane pane) throws Exception {
+    public void getText() throws Exception {
         URL newURL;
         newURL = new URL(getUrl());
         URLConnection g = newURL.openConnection();
@@ -332,11 +340,11 @@ public class gopherGraphical extends gopher implements Cloneable {
         //input
         BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), charset()));
         
-        printText(in, pane);
+        printText(in);
         in.close();
     }
 
-    private void printText(BufferedReader in, JTextPane pane) {
+    private void printText(BufferedReader in) {
         ArrayList<Byte[]> page = new ArrayList();
         boolean go = true;
         int i = 0;
@@ -363,9 +371,8 @@ public class gopherGraphical extends gopher implements Cloneable {
     public void getImage() throws Exception {
         //temp files yay!!
         
-        Path tmp = Files.createTempDirectory("gopher-tmp");
         
-        File img = new File(tmp.toUri());
+        Path img = Files.createTempFile("gopher", ".png");
         
         //download image
         URL newURL;
@@ -378,7 +385,7 @@ public class gopherGraphical extends gopher implements Cloneable {
         //input
         BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), charset()));
         
-        FileWriter F = new FileWriter(img);
+        FileWriter F = new FileWriter(img.toFile());
         while (true) {
             try {
                 F.write(in.read());
@@ -389,6 +396,6 @@ public class gopherGraphical extends gopher implements Cloneable {
         
         //desktop stuff
         Desktop dt = Desktop.getDesktop();
-        dt.open(img);
+        dt.open(img.toFile());
     }
 }
