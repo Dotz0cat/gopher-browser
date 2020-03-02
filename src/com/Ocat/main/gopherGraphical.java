@@ -305,11 +305,11 @@ public class gopherGraphical extends gopher implements Cloneable {
     
     public void getPage(JTextPane pane) throws Exception {
         //make a clone and put in the arraylist in gui
-        com.Ocat.graphics.gui.history.add((gopherGraphical) this.clone());
-        if (gui.historyNum == gui.history.size()) {
-            
+        //only if it is the latest in the arraylist
+        if (gui.historyNum == gui.history.size()-1) {
+            com.Ocat.graphics.gui.history.add((gopherGraphical) this.clone());
+            com.Ocat.graphics.gui.updateNum();
         }
-        com.Ocat.graphics.gui.updateNum();
         
         URL newURL;
         newURL = new URL(getUrl());
