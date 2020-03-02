@@ -20,7 +20,7 @@ public class gui extends javax.swing.JFrame {
      */
     public gui() {
         history = new ArrayList();
-        historyNum = history.size();
+        historyNum = 0;
         initComponents();
         PrintStream printStream = new PrintStream( new secondPrintStream(jTextPane1));
         System.setOut(printStream);
@@ -33,14 +33,17 @@ public class gui extends javax.swing.JFrame {
                     case KeyEvent.VK_LEFT:
                         //System.out.println("the thing is runing left");
                         jTextPane1.setText("");
-                        System.out.println(historyNum);
-                        historyNum = historyNum - 1;
-                        try {
-                            history.get(historyNum).getPage(jTextPane1);
-                        } catch (Exception ex) {}
+                        //System.out.println(historyNum);
+                        if (historyNum -1 >= 0) {
+                            historyNum = historyNum - 1;
+                            try {
+                                history.get(historyNum).getPage(jTextPane1);
+                            } catch (Exception ex) {}
+                        }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if (historyNum!=history.size()) {
+                        if (historyNum!=history.size()-1) {
+                            jTextPane1.setText("");
                             historyNum = historyNum +1;
                             try {
                                 history.get(historyNum).getPage(jTextPane1);
@@ -60,7 +63,7 @@ public class gui extends javax.swing.JFrame {
     }
     
     public static void updateNum() {
-        historyNum = history.size();
+        historyNum = historyNum + 1;
     }
 
     /**
@@ -153,6 +156,8 @@ public class gui extends javax.swing.JFrame {
                 jTextField1.setText(url);
             }
             gopherGraphical n = new gopherGraphical(url);
+            history = new ArrayList();
+            historyNum = 0;
             try {
                 n.getPage(jTextPane1);
             } catch (Exception ex) {
@@ -175,6 +180,8 @@ public class gui extends javax.swing.JFrame {
             jTextField1.setText(url);
         }
         gopherGraphical n = new gopherGraphical(url);
+        history = new ArrayList();
+        historyNum = 0;
         try {
             n.getPage(jTextPane1);
         } catch (Exception ex) {
