@@ -72,17 +72,18 @@ public class gopherGraphical extends gopher implements Cloneable {
                                 url = "gopher://" + line;
                             }
                             n = new gopherGraphical(url, L.getSelector());
+                            gui.update(n);
                             pane.setText("");
                             try {
                                 n.getPage(pane);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            try {
-                                back(pane);
+                            /*try {
+                            back(pane);
                             } catch (CloneNotSupportedException ex) {
-                                ex.printStackTrace();
-                            }
+                            ex.printStackTrace();
+                            }*/
                         break;
                         case ('0'):
                             line = L.getUrl();
@@ -117,7 +118,7 @@ public class gopherGraphical extends gopher implements Cloneable {
                             n = new gopherGraphical(url, L.getSelector());
                             pane.setText("");
                             try {
-                                n.getImage();
+                                n.getImage(getFileType(L.getSelector()));
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -157,6 +158,10 @@ public class gopherGraphical extends gopher implements Cloneable {
             
             q++;
         }
+    }
+    
+    private String getFileType(String selector) {
+        return selector.substring(selector.lastIndexOf(".")-1);
     }
     
     private void back(JTextPane pane) throws CloneNotSupportedException {
@@ -304,12 +309,7 @@ public class gopherGraphical extends gopher implements Cloneable {
     }
     
     public void getPage(JTextPane pane) throws Exception {
-        //make a clone and put in the arraylist in gui
-        //only if it is the latest in the arraylist
-        if (gui.historyNum == gui.history.size()-1) {
-            com.Ocat.graphics.gui.history.add((gopherGraphical) this.clone());
-            com.Ocat.graphics.gui.updateNum();
-        }
+        
         
         URL newURL;
         newURL = new URL(getUrl());
@@ -368,11 +368,10 @@ public class gopherGraphical extends gopher implements Cloneable {
         }
     }
     
-    public void getImage() throws Exception {
+    public void getImage(String type) throws Exception {
         //temp files yay!!
-        
-        
-        Path img = Files.createTempFile("gopher", ".png");
+       
+        Path img = Files.createTempFile("gopher", type);
         
         //download image
         URL newURL;
