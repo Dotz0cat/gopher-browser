@@ -13,14 +13,14 @@ import java.util.logging.Logger;
 public class gui extends javax.swing.JFrame {
     
     public static ArrayList<gopherGraphical> history;
-    public static int historyNum;
+    public static int historyIndex;
     
     /**
      * Creates new form gui
      */
     public gui() {
         history = new ArrayList();
-        historyNum = 0;
+        historyIndex = 0;
         initComponents();
         PrintStream printStream = new PrintStream( new secondPrintStream(jTextPane1));
         System.setOut(printStream);
@@ -31,22 +31,22 @@ public class gui extends javax.swing.JFrame {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 switch (evt.getKeyCode()) {
                     case KeyEvent.VK_LEFT:
-                        //System.out.println("the thing is runing left");
-                        jTextPane1.setText("");
-                        //System.out.println(historyNum);
-                        if (historyNum -1 >= 0) {
-                            historyNum = historyNum - 1;
+                        //System.out.println(historyIndex);
+                        //check if you can go back
+                        if (historyIndex -1 >= 0) {
+                            historyIndex = historyIndex - 1;
+                            jTextPane1.setText("");
                             try {
-                                history.get(historyNum).getPage(jTextPane1);
+                                history.get(historyIndex).getPage(jTextPane1);
                             } catch (Exception ex) {}
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if (historyNum!=history.size()-1) {
+                        if (historyIndex+1<history.size()) {
                             jTextPane1.setText("");
-                            historyNum = historyNum +1;
+                            historyIndex = historyIndex +1;
                             try {
-                                history.get(historyNum).getPage(jTextPane1);
+                                history.get(historyIndex).getPage(jTextPane1);
                             } catch (Exception ex) {}
                         }
                         
@@ -54,16 +54,21 @@ public class gui extends javax.swing.JFrame {
                     default:
                         break;
                 }
-                }
-});
+            }
+        });
     }
     
-    public static ArrayList<gopherGraphical> getHistory() {
-        return history;
+    public static void updateIndex() {
+        historyIndex = history.size() - 1;
     }
     
-    public static void updateNum() {
-        historyNum = historyNum + 1;
+    public static void update(gopherGraphical e) {
+        if ((history.size()-1)!=historyIndex) {
+            history.subList(historyIndex+1, history.size()).clear();
+            updateIndex();
+        }
+        history.add(e);
+        updateIndex();
     }
 
     /**
@@ -157,7 +162,8 @@ public class gui extends javax.swing.JFrame {
             }
             gopherGraphical n = new gopherGraphical(url);
             history = new ArrayList();
-            historyNum = 0;
+            historyIndex = 0;
+            history.add(n);
             try {
                 n.getPage(jTextPane1);
             } catch (Exception ex) {
@@ -181,7 +187,8 @@ public class gui extends javax.swing.JFrame {
         }
         gopherGraphical n = new gopherGraphical(url);
         history = new ArrayList();
-        historyNum = 0;
+        historyIndex = 0;
+        history.add(n);
         try {
             n.getPage(jTextPane1);
         } catch (Exception ex) {
