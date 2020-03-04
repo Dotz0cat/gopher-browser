@@ -6,6 +6,7 @@ import static com.Ocat.main.gopher.charset;
 import java.awt.Desktop;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -19,6 +20,8 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
@@ -161,7 +164,7 @@ public class gopherGraphical extends gopher implements Cloneable {
     }
     
     private String getFileType(String selector) {
-        return selector.substring(selector.lastIndexOf(".")-1);
+        return selector.substring(selector.lastIndexOf("."));
     }
     
     private void back(JTextPane pane) throws CloneNotSupportedException {
@@ -382,19 +385,15 @@ public class gopherGraphical extends gopher implements Cloneable {
         
         
         //input
-        BufferedReader in = new BufferedReader(new InputStreamReader(g.getInputStream(), charset()));
-        
-        FileWriter F = new FileWriter(img.toFile());
-        while (true) {
-            try {
-                F.write(in.read());
-            } catch (IOException ex) {
-                break;
-            }
-        }
+        ImageInputStream imgio = ImageIO.createImageInputStream(g.getInputStream());
+        BufferedImage bf = ImageIO.read(imgio);
+        boolean imgOut = ImageIO.write(bf, type.substring(1), img.toFile());
         
         //desktop stuff
         Desktop dt = Desktop.getDesktop();
-        dt.open(img.toFile());
+        if (imgOut) {
+            dt.open(img.toFile());
+        }
+        
     }
 }
