@@ -9,14 +9,15 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.*;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,6 +66,7 @@ public class gopherGraphical extends gopher implements Cloneable {
                     jClickThing L = (jClickThing) e.getSource();
                     switch (L.getType()) {
                         case ('1'):
+                            //directories
                             gopherGraphical n;
                             String line = L.getUrl();
                             String url;
@@ -82,13 +84,11 @@ public class gopherGraphical extends gopher implements Cloneable {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            /*try {
-                            back(pane);
-                            } catch (CloneNotSupportedException ex) {
-                            ex.printStackTrace();
-                            }*/
+                            //try the new back button
+                            //it is array backed so it should not break
                         break;
                         case ('0'):
+                            //text files
                             line = L.getUrl();
                             if (line.startsWith("gopher://")) {
                                 url = line;
@@ -110,6 +110,7 @@ public class gopherGraphical extends gopher implements Cloneable {
                             }
                         break;
                         case ('I'):
+                            //Images
                             // gopher code n stuff
                             line = L.getUrl();
                             if (line.startsWith("gopher://")) {
@@ -131,7 +132,10 @@ public class gopherGraphical extends gopher implements Cloneable {
                                 ex.printStackTrace();
                             }
                         break;
+                        case ('T'):
+                            //telnet?
                         case('8'):
+                            //telnet
                             pane.setText("");
                             System.err.println("this is telnet. it will not be implemented for a long time");
                             try {
@@ -141,6 +145,62 @@ public class gopherGraphical extends gopher implements Cloneable {
                             }
                         break;
                         case ('i'):
+                        break;
+                        case ('4'):
+                            //binhex file
+                        case ('5'):
+                            //uuencoded file
+                        case ('6'):
+                            //dos file
+                        case ('9'):
+                            //binary file
+                            // gopher code n stuff
+                            line = L.getUrl();
+                            if (line.startsWith("gopher://")) {
+                                url = line;
+                            }
+                            else {
+                                url = "gopher://" + line;
+                            }
+                            n = new gopherGraphical(url, L.getSelector());
+                            pane.setText("");
+                            try {
+                                n.getFile(getFileName(L.getSelector()));
+                            }
+                            catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            System.out.println("Downloaded");
+                            try {
+                                back(pane);
+                            } catch (CloneNotSupportedException ex) {
+                                ex.printStackTrace();
+                            }
+                        break;
+                        case ('h'):
+                            //html file
+                            line = L.getUrl();
+                            if (line.startsWith("gopher://")) {
+                                url = line;
+                            }
+                            else {
+                                url = "gopher://" + line;
+                            }
+                            n = new gopherGraphical(url, L.getSelector());
+                            pane.setText("");
+                            try {
+                                n.openHTML(L.getSelector());
+                            }
+                            catch (Exception ex) {
+                                ex.printStackTrace();
+                                System.err.println("This browser is made for gopher so do not expect it to do html well or at all");
+                                System.err.println("If you want to change this open a pull request");
+                            }
+                            try {
+                                back(pane);
+                            } catch (CloneNotSupportedException ex) {
+                                ex.printStackTrace();
+                            }
                         break;
                         default:
                             pane.setText("");
@@ -165,6 +225,10 @@ public class gopherGraphical extends gopher implements Cloneable {
     
     private String getFileType(String selector) {
         return selector.substring(selector.lastIndexOf("."));
+    }
+    
+    private String getFileName(String selector) {
+        return selector.substring(selector.lastIndexOf("/")+1);
     }
     
     private void back(JTextPane pane) throws CloneNotSupportedException {
@@ -388,6 +452,7 @@ public class gopherGraphical extends gopher implements Cloneable {
         ImageInputStream imgio = ImageIO.createImageInputStream(g.getInputStream());
         BufferedImage bf = ImageIO.read(imgio);
         boolean imgOut = ImageIO.write(bf, type.substring(1), img.toFile());
+        imgio.close();
         
         //desktop stuff
         Desktop dt = Desktop.getDesktop();
@@ -395,5 +460,39 @@ public class gopherGraphical extends gopher implements Cloneable {
             dt.open(img.toFile());
         }
         
+    }
+    
+    public void getFile(String fileName) throws Exception {
+        String download = System.getProperty("user.home");
+        //make file in home dir
+        File file = new File(download+"/Downloads/"+fileName);
+        //download file
+        URL newURL;
+        newURL = new URL(getUrl());
+        URLConnection g = newURL.openConnection();
+        //output before input
+        getRequest(g, getSelector());
+        
+        //the acual downloading
+        ReadableByteChannel in = Channels.newChannel(g.getInputStream());
+        FileOutputStream fileOut = new FileOutputStream(file);
+        fileOut.getChannel().transferFrom(in, 0, Long.MAX_VALUE);
+        in.close();
+        fileOut.close();
+    }
+    
+    public void openHTML(String site) throws Exception {
+        String url;
+        if (site.contains("/URL:")) {
+            url = site.substring(5);
+        }
+        else {
+            url = site;
+        }
+        URI place = new URI(url);
+        
+        
+        Desktop dt = Desktop.getDesktop();
+        dt.browse(place);
     }
 }
