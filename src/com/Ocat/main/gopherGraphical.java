@@ -1,5 +1,6 @@
 package com.Ocat.main;
 
+import com.Ocat.cso.cso;
 import com.Ocat.graphics.gui;
 import com.Ocat.graphics.jClickThing;
 import static com.Ocat.main.gopher.charset;
@@ -201,6 +202,23 @@ public class gopherGraphical extends gopher implements Cloneable {
                             } catch (CloneNotSupportedException ex) {
                                 ex.printStackTrace();
                             }
+                        break;
+                        case ('2'):
+                            line = L.getUrl();
+                            if (line.startsWith("cso://")) {
+                                url = line;
+                            }
+                            else {
+                                url = "cso://" + line;
+                            }
+                            pane.setText("");
+                            try {
+                                cso c = new cso(url, null);
+                                c.start();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            
                         break;
                         default:
                             pane.setText("");
