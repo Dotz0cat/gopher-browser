@@ -214,7 +214,7 @@ public class gopherGraphical extends gopher implements Cloneable {
                             pane.setText("");
                             try {
                                 cso c = new cso(url, null);
-                                c.start();
+                                c.start(pane);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
