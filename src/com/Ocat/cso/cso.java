@@ -114,6 +114,7 @@ public class cso {
     
     public void query(String str, String field) throws IOException {
         write(field+"="+str);
+        print();
     }
     
     private void startQuery() {
@@ -147,7 +148,7 @@ public class cso {
                 
             });
             pane.insertComponent(F);
-            pane.insertComponent(pane);
+            pane.insertComponent(G);
             System.out.println("\r\n");
         }
     }
